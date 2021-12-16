@@ -12,6 +12,7 @@
     "lintfix": "npm run lint:js -- --fix"
   },
   "dependencies": {
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/pwa": "^3.3.5",
     "core-js": "^3.19.3",
     "nuxt": "^2.15.8",
@@ -27,6 +28,8 @@
     "@nuxtjs/tailwindcss": "^4.2.1",
     "eslint": "^8.4.1",
     "eslint-plugin-nuxt": "^3.1.0",
-    "eslint-plugin-vue": "^8.2.0"
+    "eslint-plugin-vue": "^8.2.0",
+    "sass": "^1.45.0",
+    "sass-loader": "^10.2.0"
   }
 }

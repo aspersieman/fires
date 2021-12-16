@@ -1,5 +1,9 @@
 <template>
-  <Tutorial />
+  <span>
+    <navigation-bar />
+    <fire-map />
+    <footer-main />
+  </span>
 </template>
 
 <script>
