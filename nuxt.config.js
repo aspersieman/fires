@@ -1,4 +1,5 @@
 export default {
+  mode: 'spa',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Fires - Wildfires accross the globe',
@@ -20,6 +21,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '@/plugins/vuelayers.js', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -36,7 +38,8 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa'
+    '@nuxtjs/pwa',
+    '@/shared/vuelayers'
   ],
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -47,6 +50,9 @@ export default {
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-  }
+  build: { },
+
+  transpile: [
+    'vuelayers'
+  ]
 }

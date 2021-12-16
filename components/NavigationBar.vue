@@ -1,5 +1,5 @@
 <template>
-  <nav class="background-colour-primary flex items-center justify-between flex-wrap p-6 fixed w-full z-10 top-0">
+  <nav class="background-colour-primary flex items-center justify-between flex-wrap p-3 fixed w-full z-10 top-0">
     <div class="flex items-center flex-shrink-0 text-white mr-6">
       <a class="text-gray-500 no-underline hover:text-white hover:no-underline" href="#">
         <span class="text-2xl pl-2">
