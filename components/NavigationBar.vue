@@ -1,9 +1,13 @@
 <template>
   <nav class="background-colour-primary flex items-center justify-between flex-wrap p-3 fixed w-full z-10 top-0">
-    <div class="flex items-center flex-shrink-0 text-white mr-6">
-      <a class="text-gray-500 no-underline hover:text-white hover:no-underline" href="#">
+    <div class="flex items-center flex-shrink-0 mr-6 font-colour-light">
+      <a class="font-colour-light no-underline hover:text-white hover:no-underline" href="#">
         <span class="text-2xl pl-2">
-          <i class="em em-grinning" />
+          <img
+            class="logo-icon"
+            src="@/assets/img/fire.png"
+            alt="logo"
+          >
           Fires
         </span>
       </a>
@@ -11,7 +15,7 @@
 
     <div class="block lg:hidden">
       <button
-        class="flex items-center px-3 py-2 border rounded text-gray-500
+        class="flex items-center px-3 py-2 border rounded font-colour-light
         border-gray-600 hover:text-white hover:border-white"
         @click="toggle()"
       >
@@ -23,21 +27,21 @@
 
     <div
       class="w-full flex-grow lg:flex lg:items-center lg:w-auto lg:block pt-6
-      lg:pt-0"
+      lg:pt-0 z-2"
       :class="{ 'hidden' : showNavContent === false }"
     >
       <ul class="list-reset lg:flex justify-end flex-1 items-center">
         <li class="mr-3">
-          <a class="inline-block py-2 px-4 text-white no-underline" href="#">Active</a>
+          <a class="inline-block py-2 px-4 font-colour-light no-underline" href="#">Active</a>
         </li>
         <li class="mr-3">
-          <a class="inline-block text-gray-600 no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
+          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
         </li>
         <li class="mr-3">
-          <a class="inline-block text-gray-600 no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
+          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
         </li>
         <li class="mr-3">
-          <a class="inline-block text-gray-600 no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
+          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
         </li>
       </ul>
     </div>
@@ -62,3 +66,11 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+.logo-icon
+  margin-top: 7px
+  float: left
+  width: 20px
+  height: 20px
+</style>
