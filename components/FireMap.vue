@@ -160,7 +160,7 @@
     <div
       v-if="mode !== 'production'
         && geolocPosition !== undefined"
-      class="info-box"
+      class="info-box hidden md:block"
     >
       Zoom: {{ zoom }}<br>
       Center: {{ center }}<br>
@@ -362,7 +362,7 @@ export default {
   padding: 0
   margin: 0
   overflow: none
-  margin-top: 65px
+  margin-top: 57px
   width: 100vw
   height: calc(100vh - 40px - 40px)
 
@@ -370,7 +370,7 @@ export default {
   @apply border border-solid border-gray-400 rounded text-center grid grid-cols-1 m-1
 
 .side-block-container-right
-  @apply fixed top-20 right-5
+  @apply fixed top-20 right-1 md:right-5
   max-width: 15rem
   max-height: 100%
 

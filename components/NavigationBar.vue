@@ -1,16 +1,19 @@
 <template>
   <nav class="background-colour-primary flex items-center justify-between flex-wrap p-3 fixed w-full z-10 top-0">
     <div class="flex items-center flex-shrink-0 mr-6 font-colour-light">
-      <a class="font-colour-light no-underline hover:text-white hover:no-underline" href="#">
+      <a class="font-colour-light no-underline hover:text-white hover:no-underline" href="/">
         <span class="text-2xl pl-2">
           <img
             class="logo-icon"
             src="@/assets/img/fire.png"
             alt="logo"
           >
-          Fires
+          Wildfire Tracker
         </span>
       </a>
+      <span class="text-md pl-2 hidden md:block">
+        Track wildfires across the globe. Powered by <a class="hover:text-white" href="https://api.nasa.gov">NASA</a>
+      </span>
     </div>
 
     <div class="block lg:hidden">
@@ -32,16 +35,10 @@
     >
       <ul class="list-reset lg:flex justify-end flex-1 items-center">
         <li class="mr-3">
-          <a class="inline-block py-2 px-4 font-colour-light no-underline" href="#">Active</a>
+          <a class="inline-block py-2 px-4 font-colour-light no-underline" href="https://nicolvandermerwe.com">About me</a>
         </li>
         <li class="mr-3">
-          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
-        </li>
-        <li class="mr-3">
-          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
-        </li>
-        <li class="mr-3">
-          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="#">link</a>
+          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="https://github.com/aspersieman/fires">Code</a>
         </li>
       </ul>
     </div>
@@ -60,7 +57,6 @@ export default {
 
   methods: {
     toggle () {
-      console.log('toggle')
       this.showNavContent = !this.showNavContent
     }
   }

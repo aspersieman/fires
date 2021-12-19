@@ -1,12 +1,12 @@
 <template>
   <footer class="text-center lg:text-left bg-gray-100 text-gray-600 fixed w-full z-10 bottom-0">
-    <div class="flex justify-center items-center lg:justify-between p-2 border-b border-gray-300">
-      <span>
+    <div class="flex justify-center items-center lg:justify-between p-2 border-b border-gray-300 mr-1">
+      <span class="text-xs md:text-md">
         <span>© {{ year }} Copyright:</span>
         <a class="text-gray-600 font-semibold" href="https://nicolvandermerwe.com/">Nicol van der Merwe</a>
       </span>
-      <div class="flex justify-center">
-        <a href="https://instagram.com/aspersieman" class="mr-6 text-gray-600">
+      <div class="flex justify-center mx-1">
+        <a href="https://www.linkedin.com/in/nicolaasjvandermerwe/" class="mr-1 md:mr-6 text-gray-600">
           <svg
             aria-hidden="true"
             focusable="false"
@@ -23,7 +23,7 @@
             />
           </svg>
         </a>
-        <a href="https://github.com/aspersieman/fires" class="text-gray-600">
+        <a href="https://github.com/aspersieman" class="text-gray-600">
           <svg
             aria-hidden="true"
             focusable="false"
@@ -41,7 +41,7 @@
           </svg>
         </a>
       </div>
-      <span class="text-xs">
+      <span class="text-xs ml-1">
         <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
       </span>
     </div>
