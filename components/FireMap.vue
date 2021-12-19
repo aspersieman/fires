@@ -15,6 +15,7 @@
         padding: 0;
         margin: 0;
       "
+      @click="clickCoordinate = $event.coordinate"
     >
       <vl-view
         ref="view"
@@ -44,6 +45,7 @@
         <vl-feature>
           <vl-geom-point
             :coordinates="circleCoordinates"
+            :offset="[0, -10]"
           />
           <vl-style-box>
             <vl-style-circle :radius="20">
@@ -66,43 +68,88 @@
                 :src="require('@/assets/img/fire.png')"
                 :scale="iconScale"
                 :anchor="[0.5, 1]"
+                @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
               />
             </vl-style-box>
           </vl-feature>
         </template>
       </vl-geoloc>
 
+      <vl-interaction-select
+        :features.sync="selectedFeatures"
+      >
+        <template slot-scope="select">
+          <vl-overlay
+            v-for="feature in select.features"
+            :id="feature.id"
+            :key="feature.id"
+            class="feature-popup"
+            :position="pointOnSurface(feature.geometry)"
+            :auto-pan="true"
+            :auto-pan-animation="{ duration: 300 }"
+            :offset="[0, -15]"
+          >
+            <template slot-scope="popup">
+              <card-feature
+                footer-title="Sources"
+              >
+                <template slot="heading">
+                  Wildfire: {{ getEventByFeatureId(feature.id).title }}
+                </template>
+                <template slot="body">
+                  {{ getEventByFeatureId(feature.id).description }}
+                  <p class="text-xs">
+                    Coordinates: {{ formatcoords(popup.position).format() }}
+                  </p>
+                </template>
+                <template slot="footer">
+                  <button
+                    v-for="source in getEventByFeatureId(feature.id).sources"
+                    :key="source.id"
+                    class="card-button"
+                    @click="goTo(source.url)"
+                  >
+                    {{ source.id }}
+                  </button>
+                </template>
+              </card-feature>
+            </template>
+          </vl-overlay>
+        </template>
+      </vl-interaction-select>
+
       <vl-overlay
-        v-if="showCircle"
+        v-if="showCircle && selectedEvent"
         class="feature-popup"
         :position="circleCoordinates"
         :auto-pan="true"
         :auto-pan-animation="{ duration: 300 }"
+        :offset="[0, -15]"
       >
         <template slot-scope="popup">
-          <section class="card bg-white border border-solid border-gray-400 p-1 rounded">
-            <header class="card-header">
-              <p class="card-header-title">
-                Feature ID
+          <card-feature
+            footer-title="Sources"
+          >
+            <template slot="heading">
+              Wildfire: {{ selectedEvent.title.trim() }}
+            </template>
+            <template slot="body">
+              {{ selectedEvent.description }}
+              <p class="text-xs">
+                Coordinates: {{ formatcoords(popup.position).format() }}
               </p>
-              <a
-                class="card-header-icon"
-                title="Close"
+            </template>
+            <template slot="footer">
+              <button
+                v-for="source in selectedEvent.sources"
+                :key="source.id"
+                class="card-button"
+                @click="goTo(source.url)"
               >
-                <b-icon icon="close" />
-              </a>
-            </header>
-            <div class="card-content">
-              <div class="content">
-                <p>
-                  Overlay popup content for Feature with ID
-                </p>
-                <p>
-                  Popup: {{ JSON.stringify(popup) }}
-                </p>
-              </div>
-            </div>
-          </section>
+                {{ source.id }}
+              </button>
+            </template>
+          </card-feature>
         </template>
       </vl-overlay>
 
@@ -111,7 +158,8 @@
       </vl-layer-tile>
     </vl-map>
     <div
-      v-if="geolocPosition !== undefined"
+      v-if="mode !== 'production'
+        && geolocPosition !== undefined"
       class="info-box"
     >
       Zoom: {{ zoom }}<br>
@@ -183,7 +231,8 @@
             v-for="wildfire in filterWildfires"
             :key="wildfire.id"
             class="side-block-list-item"
-            @click="goToPosition(wildfire.geometries[0].coordinates, true)"
+            :title="wildfire.title.trim()"
+            @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
           >
             <img
               class="side-block-list-icon"
@@ -206,18 +255,24 @@ export default {
 
   data () {
     return {
-      loading: false,
-      loadingText: 'Loading event data...',
+      mode: process.env.NODE_ENV,
+
       zoom: 5,
       center: [0, 0],
       rotation: 0,
       geolocPosition: undefined,
+      clickCoordinate: undefined,
+      selectedFeatures: [],
+
       events: [],
       wildfires: [],
       iconScale: 0.04,
       wildfireFilter: '',
       showCircle: false,
-      circleCoordinates: [0, 0]
+      circleCoordinates: [0, 0],
+      loading: false,
+      loadingText: 'Loading event data...',
+      selectedEvent: null
     }
   },
 
@@ -241,6 +296,7 @@ export default {
 
   methods: {
     pointOnSurface: findPointOnSurface,
+    formatcoords,
 
     fetchEvents () {
       this.loading = true
@@ -262,7 +318,7 @@ export default {
         .then(() => { this.loading = false })
     },
 
-    goToPosition (position, showCircle = false) {
+    goToPosition (position, showCircle = false, selectedEvent = null) {
       this.showCircle = false
       this.loading = true
       this.loadingText = 'Finding position...'
@@ -275,9 +331,25 @@ export default {
             this.showCircle = true
             this.circleCoordinates = position
           }
+          if (selectedEvent) {
+            this.selectedEvent = selectedEvent
+          }
           this.loading = false
         })
       this.center = position
+    },
+
+    goTo (url) {
+      window.open(url, '_blank')
+    },
+
+    getEventByFeatureId (featureId) {
+      let event = this.events.filter((event) => {
+        return featureId.includes(event.id)
+      })
+      if (event.length === 0) { return {} }
+      event = event[0]
+      return event
     }
   }
 }
@@ -299,22 +371,22 @@ export default {
 
 .side-block-container-right
   @apply fixed top-20 right-5
-  max-width: 10rem
+  max-width: 15rem
   max-height: 100%
 
 .side-block-list
   max-height: 30vh
 
 .side-block-list-buttons
-  background-color: rgb(255, 255, 255, 0.6)
+  background-color: rgb(255, 255, 255, 0.8)
 
 .side-block-list-item
   @apply truncate p-1 border-t border-solid border-gray-300 text-left
   cursor: pointer
-  font-size: 0.5rem
-  width: 144px
-  max-width: 144px
-  background-color: rgb(255, 255, 255, 0.6)
+  font-size: 0.7rem
+  width: 150px
+  max-width: 150px
+  background-color: rgb(255, 255, 255, 0.8)
 
 .side-block-list-icon
   @apply float-left mr-1
@@ -324,14 +396,14 @@ export default {
 
 .side-block-title
   @apply sticky rounded-t border-b border-solid border-gray-400
-  background-color: rgb(255, 255, 255, 0.5)
+  background-color: rgb(255, 255, 255, 0.8)
   margin: 0
   width: 100%
   padding: 0.3rem
 
 .side-block-filter
   @apply sticky
-  background-color: rgb(255, 255, 255, 0.5)
+  background-color: rgb(255, 255, 255, 0.8)
   width: 100%
   padding: 0.3rem
 
@@ -399,9 +471,6 @@ export default {
     border-width: 11px
     left: 48px
     margin-left: -11px
-  .card-content
-    max-height: 20em
-    overflow: auto
   .content
     word-break: break-all
 </style>
