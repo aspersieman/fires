@@ -1,5 +1,89 @@
 <template>
   <div class="main-content shadow-lg bg-white">
+    <side-bar
+      title="Actions"
+      :right="right"
+      :transparent="transparent"
+    >
+      <slot>
+        <div class="side-block-container-right">
+          <div
+            class="actions-container side-block"
+          >
+            <h3 class="side-block-title">
+              Actions
+            </h3>
+            <div
+              class="side-block-list side-block-list-buttons"
+            >
+              <button
+                class="action-button action-button-icon"
+                @click="goToPosition(geolocPosition)"
+              >
+                <img
+                  src="@/assets/img/pin.png"
+                  alt="Pin"
+                >
+                My location
+              </button>
+            </div>
+          </div>
+          <div
+            class="side-block"
+          >
+            <h3 class="side-block-title">
+              Wildfires
+            </h3>
+            <div
+              class="side-block-filter"
+            >
+              <input
+                v-model="wildfireFilter"
+                type="text"
+                class="
+                  wildfire-filter
+                  block
+                  w-full
+                  px-3
+                  py-1.5
+                  text-base
+                  text-gray-700
+                  bg-white
+                  bg-clip-padding
+                  border
+                  border-solid
+                  border-gray-300
+                  rounded
+                  transition
+                  ease-in-out
+                  focus:text-gray-700
+                  focus:bg-white
+                  focus:outline-none
+                "
+                placeholder="Search..."
+              >
+            </div>
+            <div
+              class="side-block-list overflow-y-scroll overflow-x-hidden"
+            >
+              <div
+                v-for="wildfire in filterWildfires"
+                :key="wildfire.id"
+                class="side-block-list-item"
+                :title="wildfire.title.trim()"
+                @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
+              >
+                <img
+                  class="side-block-list-icon"
+                  src="@/assets/img/fire.png"
+                >
+                {{ wildfire.title.trim() }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </slot>
+    </side-bar>
     <loading-overlay
       v-if="loading"
       :text="loadingText"
@@ -167,82 +251,6 @@
       Rotation: {{ rotation }}<br>
       My geolocation: {{ getGeoLocPostion }}
     </div>
-    <div class="side-block-container-right">
-      <div
-        class="actions-container side-block"
-      >
-        <h3 class="side-block-title">
-          Actions
-        </h3>
-        <div
-          class="side-block-list side-block-list-buttons"
-        >
-          <button
-            class="action-button action-button-icon"
-            @click="goToPosition(geolocPosition)"
-          >
-            <img
-              src="@/assets/img/pin.png"
-              alt="Pin"
-            >
-            My location
-          </button>
-        </div>
-      </div>
-      <div
-        class="side-block"
-      >
-        <h3 class="side-block-title">
-          Wildfires
-        </h3>
-        <div
-          class="side-block-filter"
-        >
-          <input
-            v-model="wildfireFilter"
-            type="text"
-            class="
-              wildfire-filter
-              block
-              w-full
-              px-3
-              py-1.5
-              text-base
-              text-gray-700
-              bg-white
-              bg-clip-padding
-              border
-              border-solid
-              border-gray-300
-              rounded
-              transition
-              ease-in-out
-              focus:text-gray-700
-              focus:bg-white
-              focus:outline-none
-            "
-            placeholder="Search..."
-          >
-        </div>
-        <div
-          class="side-block-list overflow-y-scroll overflow-x-hidden"
-        >
-          <div
-            v-for="wildfire in filterWildfires"
-            :key="wildfire.id"
-            class="side-block-list-item"
-            :title="wildfire.title.trim()"
-            @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
-          >
-            <img
-              class="side-block-list-icon"
-              src="@/assets/img/fire.png"
-            >
-            {{ wildfire.title.trim() }}
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -272,7 +280,10 @@ export default {
       circleCoordinates: [0, 0],
       loading: false,
       loadingText: 'Loading event data...',
-      selectedEvent: null
+      selectedEvent: null,
+
+      right: true,
+      transparent: true
     }
   },
 
@@ -370,12 +381,9 @@ export default {
   @apply border border-solid border-gray-400 rounded text-center grid grid-cols-1 m-1
 
 .side-block-container-right
-  @apply fixed top-20 right-1 md:right-5
-  max-width: 15rem
-  max-height: 100%
-
-.side-block-list
-  max-height: 30vh
+  margin: 5px
+  max-width: 20rem
+  min-width: 20rem
 
 .side-block-list-buttons
   background-color: rgb(255, 255, 255, 0.8)
@@ -384,8 +392,6 @@ export default {
   @apply truncate p-1 border-t border-solid border-gray-300 text-left
   cursor: pointer
   font-size: 0.7rem
-  width: 150px
-  max-width: 150px
   background-color: rgb(255, 255, 255, 0.8)
 
 .side-block-list-icon
@@ -404,8 +410,6 @@ export default {
 .side-block-filter
   @apply sticky
   background-color: rgb(255, 255, 255, 0.8)
-  width: 100%
-  padding: 0.3rem
 
 .info-box
   @apply fixed bottom-20 left-5 text-xs border border-solid border-gray-400 p-1 rounded
@@ -437,12 +441,11 @@ export default {
   @apply inline-flex items-start
 
 .wildfire-filter
-  margin: 3px
-  margin-top: 0
-  font-size: 0.7rem
+  @apply bg-white
   height: 1.8rem
-  width: 132px
-  max-width: 132px
+  padding: 0.3rem
+  margin: 0.3rem
+  width: 300px
 
 .wildfire-filter:focus
   border-color: $accent_0_300
