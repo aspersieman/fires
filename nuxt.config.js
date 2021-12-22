@@ -45,8 +45,21 @@ export default {
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
+    meta: {
+      title: 'Wildfire Tracker',
+      author: 'Nicol van der Merwe'
+    },
     manifest: {
-      lang: 'en'
+      lang: 'en',
+      // Short name of your app
+      short_name: 'Wildfire Tracker',
+      // Name of your app
+      name: 'Wildfire Tracker',
+      // Add descreption
+      descreption: 'Track wildfires across the globe',
+      start_url: '/',
+      theme_color: 'rgb(197, 44, 48)',
+      background_color: '#FFFFFF'
     }
   },
 
