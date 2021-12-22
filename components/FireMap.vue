@@ -3,36 +3,24 @@
     <side-bar
       title="Actions"
       :right="right"
-      :transparent="transparent"
     >
       <slot>
         <div class="side-block-container-right">
-          <div
-            class="actions-container side-block"
+          <button
+            class="action-button action-button-icon"
+            @click="goToPosition(geolocPosition)"
           >
-            <h3 class="side-block-title">
-              Actions
-            </h3>
-            <div
-              class="side-block-list side-block-list-buttons"
+            <img
+              src="@/assets/img/pin.png"
+              alt="Pin"
             >
-              <button
-                class="action-button action-button-icon"
-                @click="goToPosition(geolocPosition)"
-              >
-                <img
-                  src="@/assets/img/pin.png"
-                  alt="Pin"
-                >
-                My location
-              </button>
-            </div>
-          </div>
+            My location
+          </button>
           <div
             class="side-block"
           >
             <h3 class="side-block-title">
-              Wildfires
+              Select Wildfires
             </h3>
             <div
               class="side-block-filter"
@@ -40,31 +28,12 @@
               <input
                 v-model="wildfireFilter"
                 type="text"
-                class="
-                  wildfire-filter
-                  block
-                  w-full
-                  px-3
-                  py-1.5
-                  text-base
-                  text-gray-700
-                  bg-white
-                  bg-clip-padding
-                  border
-                  border-solid
-                  border-gray-300
-                  rounded
-                  transition
-                  ease-in-out
-                  focus:text-gray-700
-                  focus:bg-white
-                  focus:outline-none
-                "
+                class="wildfire-filter"
                 placeholder="Search..."
               >
             </div>
             <div
-              class="side-block-list overflow-y-scroll overflow-x-hidden"
+              class="side-block-list"
             >
               <div
                 v-for="wildfire in filterWildfires"
@@ -282,8 +251,7 @@ export default {
       loadingText: 'Loading event data...',
       selectedEvent: null,
 
-      right: true,
-      transparent: true
+      right: true
     }
   },
 
@@ -372,18 +340,20 @@ export default {
 .main-content
   padding: 0
   margin: 0
-  overflow: none
+  overflow: hidden
   margin-top: 57px
   width: 100vw
   height: calc(100vh - 40px - 40px)
 
-.side-block
-  @apply border border-solid border-gray-400 rounded text-center grid grid-cols-1 m-1
-
 .side-block-container-right
+  @apply grid col-span-12
   margin: 5px
-  max-width: 20rem
-  min-width: 20rem
+
+.side-block
+  @apply border border-solid border-gray-400 rounded text-center m-1
+
+.side-block-list
+  @apply overflow-y-scroll overflow-x-hidden grid col-span-12
 
 .side-block-list-buttons
   background-color: rgb(255, 255, 255, 0.8)
@@ -404,7 +374,6 @@ export default {
   @apply sticky rounded-t border-b border-solid border-gray-400
   background-color: rgb(255, 255, 255, 0.8)
   margin: 0
-  width: 100%
   padding: 0.3rem
 
 .side-block-filter
@@ -415,37 +384,26 @@ export default {
   @apply fixed bottom-20 left-5 text-xs border border-solid border-gray-400 p-1 rounded
   background-color: rgb(255, 255, 255, 0.5)
 
-.actions-container
-  button img
-    width: 20px
-    height: 20px
-
-.actions-container
-    button:first-of-type
-      margin: 0.25rem
-
-.actions-container
-  button
-    margin-bottom: 0.25rem
-    margin-left: 0.25rem
-    margin-right: 0.25rem
-
 .action-button
-  @apply whitespace-nowrap text-white font-bold py-2 px-2 rounded
+  @apply whitespace-nowrap text-white font-bold rounded m-1
   background-color: $accent_0_200
+  max-height: 35px
+  margin: 5px
+  padding: 3px
 
 .action-button:hover
   background-color: $accent_0_300
 
 .action-button-icon img
   @apply inline-flex items-start
+  width: 20px
+  height: 20px
 
 .wildfire-filter
-  @apply bg-white
+  @apply bg-white block px-3 py-1.5 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out focus:text-gray-700 focus:bg-white focus:outline-none
   height: 1.8rem
   padding: 0.3rem
   margin: 0.3rem
-  width: 300px
 
 .wildfire-filter:focus
   border-color: $accent_0_300
