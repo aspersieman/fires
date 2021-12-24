@@ -58,6 +58,6 @@ export default {
  @apply px-3 pb-2 text-right
 
 .card-button
-  @apply whitespace-nowrap text-white font-bold py-2 px-2 ml-1 rounded
+  @apply whitespace-no-wrap text-white font-bold py-2 px-2 ml-1 rounded
   background-color: $accent_1_200
 </style>

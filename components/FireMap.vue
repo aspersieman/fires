@@ -1,8 +1,9 @@
 <template>
-  <div class="main-content shadow-lg bg-white">
+  <div class="main-content">
     <side-bar
       title="Actions"
       :right="right"
+      :state="sideBarState"
     >
       <slot>
         <div class="side-block-container-right">
@@ -21,7 +22,7 @@
             class="side-block"
           >
             <h3 class="side-block-title">
-              Select Wildfires
+              View Wildfire
             </h3>
             <div
               class="side-block-filter"
@@ -41,7 +42,7 @@
                 :key="wildfire.id"
                 class="side-block-list-item"
                 :title="wildfire.title.trim()"
-                @click="goToPosition(wildfire.geometries[0].coordinates, wildfire)"
+                @click="goToPosition(wildfire.geometries[0].coordinates, wildfire.id)"
               >
                 <img
                   class="side-block-list-icon"
@@ -58,194 +59,145 @@
       v-if="loading"
       :text="loadingText"
     />
-    <vl-map
-      :load-tiles-while-animating="true"
-      :load-tiles-while-interacting="true"
-      data-projection="EPSG:4326"
-      class="fires-map"
-      style="
-        height: 100%;
-        width: 100%;
-        padding: 0;
-        margin: 0;
-      "
-      @click="clickCoordinate = $event.coordinate"
-    >
-      <vl-view
-        ref="view"
-        :zoom.sync="zoom"
-        :center.sync="center"
-        :rotation.sync="rotation"
-      />
-
-      <vl-geoloc>
-        <template slot-scope="geoloc">
-          <vl-feature v-if="geoloc.position" id="position-feature">
-            <vl-geom-point :coordinates="geoloc.position" />
-            <vl-style-box>
-              <vl-style-icon
-                :src="require('@/assets/img/pin.png')"
-                :scale="iconScale"
-                :anchor="[0.5, 1]"
-              />
-            </vl-style-box>
-          </vl-feature>
-        </template>
-      </vl-geoloc>
-
-      <vl-geoloc
-        v-for="wildfire in wildfires"
-        :id="wildfire.id"
-        :key="wildfire.id"
+    <client-only>
+      <l-map
+        ref="wildfireMap"
+        :zoom="zoom"
+        :center="center"
+        :options="mapOptions"
+        style="height: 100%; z-index: 0;"
+        @update:center="centerUpdate"
+        @update:zoom="zoomUpdate"
       >
-        <template slot-scope="geoloc">
-          <vl-feature v-if="geoloc.position" :id="'position-feature-' + wildfire.id">
-            <vl-geom-point :coordinates="wildfire.geometries[0].coordinates" />
-            <vl-style-box>
-              <vl-style-icon
-                :src="require('@/assets/img/fire.png')"
-                :scale="iconScale"
-                :anchor="[0.5, 1]"
-                @click="goToPosition(wildfire.geometries[0].coordinates, wildfire)"
-              />
-            </vl-style-box>
-          </vl-feature>
-        </template>
-      </vl-geoloc>
-
-      <vl-interaction-select
-        :features.sync="selectedFeatures"
-      >
-        <template slot-scope="select">
-          <vl-overlay
-            v-for="feature in select.features"
-            :id="feature.id"
-            :key="feature.id"
-            class="feature-popup"
-            :position="pointOnSurface(feature.geometry)"
-            :auto-pan="true"
-            :auto-pan-animation="{ duration: 300 }"
-            :offset="[0, -15]"
-          >
-            <template slot-scope="popup">
-              <card-feature
-                footer-title="Sources"
-              >
-                <template slot="heading">
-                  Wildfire: {{ getEventByFeatureId(feature.id).title }}
-                </template>
-                <template slot="body">
-                  {{ getEventByFeatureId(feature.id).description }}
-                  <p class="text-xs">
-                    Coordinates: {{ formatcoords(popup.position).format() }}
+        <l-tile-layer
+          :url="url"
+          :attribution="attribution"
+        />
+        <l-marker
+          v-if="userPosition"
+          :lat-lng="userPosition"
+        >
+          <l-tooltip :options="{ permanent: true, interactive: true }">
+            <div>
+              You are here
+            </div>
+          </l-tooltip>
+        </l-marker>
+        <l-marker
+          v-for="wildfire in wildfires"
+          :id="wildfire.id"
+          :ref="`marker-`+wildfire.id"
+          :key="wildfire.id"
+          :lat-lng="wildfire.geometries[0].coordinates"
+        >
+          <l-icon
+            :icon-size="dynamicSize"
+            :icon-anchor="dynamicAnchor"
+            :icon-url="require('@/assets/img/fire.png')"
+          />
+          <l-popup>
+            <card-feature
+              footer-title="Sources"
+            >
+              <template slot="heading">
+                Wildfire: {{ wildfire.title.trim() }}
+              </template>
+              <template slot="body">
+                {{ wildfire.description }}
+                <div class="text-xs">
+                  <p class="font-bold">
+                    Coordinates:
                   </p>
-                </template>
-                <template slot="footer">
-                  <button
-                    v-for="source in getEventByFeatureId(feature.id).sources"
-                    :key="source.id"
-                    class="card-button"
-                    @click="goTo(source.url)"
-                  >
-                    {{ source.id }}
-                  </button>
-                </template>
-              </card-feature>
-            </template>
-          </vl-overlay>
-        </template>
-      </vl-interaction-select>
-
-      <vl-overlay
-        v-if="selectedEvent"
-        class="feature-popup"
-        :position="circleCoordinates"
-        :auto-pan="true"
-        :auto-pan-animation="{ duration: 300 }"
-        :offset="[0, -15]"
-      >
-        <template slot-scope="popup">
-          <card-feature
-            footer-title="Sources"
-          >
-            <template slot="heading">
-              Wildfire: {{ selectedEvent.title.trim() }}
-            </template>
-            <template slot="body">
-              {{ selectedEvent.description }}
-              <p class="text-xs">
-                Coordinates: {{ formatcoords(popup.position).format() }}
-              </p>
-            </template>
-            <template slot="footer">
-              <button
-                v-for="source in selectedEvent.sources"
-                :key="source.id"
-                class="card-button"
-                @click="goTo(source.url)"
-              >
-                {{ source.id }}
-              </button>
-            </template>
-          </card-feature>
-        </template>
-      </vl-overlay>
-
-      <vl-layer-tile id="osm">
-        <vl-source-osm />
-      </vl-layer-tile>
-    </vl-map>
-    <div
-      v-if="mode !== 'production'
-        && center !== undefined"
-      class="info-box hidden md:block"
-    >
-      Zoom: {{ zoom }}<br>
-      Center: {{ center }}<br>
-      Rotation: {{ rotation }}<br>
-      My geolocation: {{ getGeoLocPosition }}
-    </div>
+                  <ul>
+                    <li>
+                      Latitude: {{ wildfire.geometries[0].coordinates[0] }}
+                    </li>
+                    <li>
+                      Longitude: {{ wildfire.geometries[0].coordinates[1] }}
+                    </li>
+                  </ul>
+                </div>
+              </template>
+              <template slot="footer">
+                <button
+                  v-for="source in wildfire.sources"
+                  :key="source.id"
+                  class="card-button"
+                  @click="goTo(source.url)"
+                >
+                  {{ source.id }}
+                </button>
+              </template>
+            </card-feature>
+          </l-popup>
+        </l-marker>
+      </l-map>
+    </client-only>
   </div>
 </template>
 
 <script>
-import { findPointOnSurface } from 'vuelayers/lib/ol-ext'
+import { latLng } from 'leaflet'
+import {
+  LIcon,
+  LMap,
+  LMarker,
+  LPopup,
+  LTileLayer,
+  LTooltip
+} from 'vue2-leaflet'
+import 'leaflet/dist/leaflet.css'
+
 const formatcoords = require('formatcoords')
 
 export default {
-  name: 'FireMap',
+  name: 'WildfiresMap',
+
+  components: {
+    LIcon,
+    LMap,
+    LMarker,
+    LPopup,
+    LTileLayer,
+    LTooltip
+  },
 
   data () {
     return {
-      mode: process.env.NODE_ENV,
-
-      zoom: 5,
-      center: [0, 0],
-      rotation: 0,
-      clickCoordinate: undefined,
-      selectedFeatures: [],
-
-      events: [],
+      zoom: 7,
+      center: latLng(0, 0),
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution:
+        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      currentZoom: 7,
+      currentCenter: latLng(0, 0),
+      mapOptions: {
+        zoomSnap: 0.5
+      },
       wildfires: [],
-      iconScale: 0.04,
-      wildfireFilter: '',
-      circleCoordinates: [0, 0],
+      userPosition: null,
+      iconSize: 32,
+
       loading: false,
       loadingText: 'Loading event data...',
-      selectedEvent: null,
-      userPosition: null,
-      gettingUserPosition: true,
 
-      // Sidebar
-      right: true
+      windowWidth: window.innerWidth,
+
+      // sidebar
+      right: true,
+      wildfireFilter: '',
+      gettingUserPosition: true,
+      sideBarState: false
     }
   },
 
   computed: {
-    getGeoLocPosition () {
-      return this.center
-        ? formatcoords(this.center).format()
-        : ['', '']
+    dynamicSize () {
+      return [this.iconSize, this.iconSize * 1]
+    },
+
+    dynamicAnchor () {
+      return [this.iconSize / 2, 0]
     },
 
     filterWildfires () {
@@ -256,17 +208,18 @@ export default {
   },
 
   mounted () {
+    window.onresize = () => {
+      this.windowWidth = window.innerWidth
+    }
     this.fetchEvents()
     if (!('geolocation' in navigator)) {
       console.error('Geolocation is not available.')
     }
 
-    // get position
     navigator.geolocation.getCurrentPosition((pos) => {
       this.gettingUserPosition = false
-      this.userPosition = [pos.coords.latitude, pos.coords.longitude]
+      this.userPosition = latLng(pos.coords.latitude, pos.coords.longitude)
       this.center = this.userPosition
-      console.log(this.userPosition)
     }, (err) => {
       this.gettingUserPosition = false
       console.error(err.message)
@@ -274,8 +227,16 @@ export default {
   },
 
   methods: {
-    pointOnSurface: findPointOnSurface,
+    latLng,
     formatcoords,
+
+    zoomUpdate (zoom) {
+      this.currentZoom = zoom
+    },
+
+    centerUpdate (center) {
+      this.currentCenter = center
+    },
 
     fetchEvents () {
       this.loading = true
@@ -289,6 +250,7 @@ export default {
               return category.id === 8 // Wildfires
             })
             if (categories.length > 0) {
+              item.geometries[0].coordinates = item.geometries[0].coordinates.reverse()
               this.wildfires.push(item)
             }
           })
@@ -297,34 +259,22 @@ export default {
         .then(() => { this.loading = false })
     },
 
-    goToPosition (position, selectedEvent = null) {
-      console.log(position)
-      this.loading = true
-      this.loadingText = 'Finding position...'
-      this.$refs.view.animate({
-        center: position,
-        zoom: 7
-      })
-        .then(() => {
-          if (selectedEvent) {
-            this.selectedEvent = selectedEvent
-          }
-          this.loading = false
-          // this.center = position
-        })
-    },
-
     goTo (url) {
       window.open(url, '_blank')
     },
 
-    getEventByFeatureId (featureId) {
-      let event = this.events.filter((event) => {
-        return featureId.includes(event.id)
-      })
-      if (event.length === 0) { return {} }
-      event = event[0]
-      return event
+    goToPosition (position, id) {
+      console.log(position)
+      this.loading = true
+      this.loadingText = 'Finding position...'
+      if (id) {
+        this.$refs['marker-' + id][0].mapObject.openPopup()
+      }
+      if (this.windowWidth <= 768) {
+        this.sideBarState = !this.sideBarState
+      }
+      this.$refs.wildfireMap.mapObject.panTo(position)
+      this.loading = false
     }
   }
 }
@@ -337,16 +287,18 @@ export default {
   padding: 0
   margin: 0
   overflow: hidden
-  margin-top: 57px
-  width: 100vw
-  height: calc(100vh - 40px - 40px)
+  margin-top: 58px
+  height: calc(100vh - 40px - 48px)
 
 .side-block-container-right
-  @apply grid col-span-12 justify-self-start
+  @apply grid col-span-12 place-self-start
   margin: 5px
+  width: 98%
+  height: 100%
 
 .side-block
-  @apply border border-solid border-gray-400 rounded text-center m-1
+  @apply border border-solid border-gray-400 rounded text-center m-1 place-self-start
+  width: 98%
 
 .side-block-list
   @apply overflow-y-scroll overflow-x-hidden grid col-span-12
@@ -357,13 +309,17 @@ export default {
 .side-block-list-item
   @apply truncate p-1 border-t border-solid border-gray-300 text-left
   cursor: pointer
-  font-size: 0.7rem
+  font-size: 0.9rem !important
   background-color: rgb(255, 255, 255, 0.8)
+  margin: 0
+  width: 100%
+.side-block-list-item:hover
+  @apply bg-gray-700
 
 .side-block-list-icon
   @apply float-left mr-1
-  width: 0.5rem
-  height: 0.5rem
+  width: 0.9rem
+  height: 0.9rem
   margin-top: 0.2rem
 
 .side-block-title
@@ -376,48 +332,19 @@ export default {
   @apply sticky
   background-color: rgb(255, 255, 255, 0.8)
 
-.info-box
-  @apply fixed bottom-20 left-5 text-xs border border-solid border-gray-400 p-1 rounded
-  background-color: rgb(255, 255, 255, 0.5)
-
 .wildfire-filter
-  @apply bg-white block px-3 py-1.5 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out focus:text-gray-700 focus:bg-white focus:outline-none
+  @apply bg-white block px-3 py-1 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out
   height: 1.8rem
   padding: 0.3rem
   margin: 0.3rem
+.wildfire-filter:focus
+  @apply text-gray-700 bg-white outline-none
 
 .wildfire-filter:focus
   border-color: $accent_0_300
 
-.feature-popup
-  position: absolute
-  left: -50px
-  bottom: 12px
-  width: 20em
-  max-width: none
-  &:after, &:before
-    top: 100%
-    border: solid transparent
-    content: ' '
-    height: 0
-    width: 0
-    position: absolute
-    pointer-events: none
-  &:after
-    border-top-color: white
-    border-width: 10px
-    left: 48px
-    margin-left: -10px
-  &:before
-    border-top-color: #cccccc
-    border-width: 11px
-    left: 48px
-    margin-left: -11px
-  .content
-    word-break: break-all
-
 .action-button
-  @apply whitespace-nowrap text-white font-bold rounded m-1
+  @apply whitespace-no-wrap text-white font-bold rounded m-1
   background-color: $accent_0_200
   max-height: 35px
   margin: 5px

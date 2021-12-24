@@ -18,7 +18,6 @@
         Track wildfires across the globe. Powered by <a class="hover:text-white" href="https://api.nasa.gov">NASA</a>
       </span>
     </div>
-
     <div class="block lg:hidden">
       <navigation-menu
         :items="navigationItems"
@@ -63,6 +62,11 @@ export default {
           name: 'code',
           href: 'https://github.com/aspersieman/fires',
           title: 'Code'
+        },
+        {
+          name: 'about',
+          href: null,
+          title: 'About'
         }
       ]
     }

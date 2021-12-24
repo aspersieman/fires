@@ -28,7 +28,7 @@
       <!-- Sidebar Content -->
       <div
         ref="content"
-        class="content"
+        class="content filter drop-shadow-lg"
         :class="[open ? 'max-w-lg' : 'max-w-0']"
       >
         <div
@@ -111,9 +111,14 @@ export default {
 @import "@/assets/sass/_variables.sass"
 
 .toggle-button
-  @apply w-10 h-10 p-1 my-auto text-white bg-gray-600 text-center focus:outline-none hover:bg-gray-500 duration-300
+  @apply w-10 h-10 p-1 my-auto text-white bg-gray-600 text-center duration-300
   background-color: $accent_2_300
   z-index: 1
+.toggle-button:focus
+  @apply outline-none
+.toggle-button:hover
+  @apply bg-gray-500
+
 .toggle-button > svg
   z-index: 1
   margin-bottom: -40px
@@ -124,10 +129,13 @@ export default {
   z-index: 1
 
 .header
-  @apply border-b border-solid border-gray-300 font-bold w-full md:w-96 grid grid-cols-12 col-span-12
+  @apply border-b border-solid border-gray-300 font-bold w-full grid grid-cols-12 col-span-12
   height: 4rem
   padding: 5px
   margin: 0
+@screen lg
+  .header
+    width: 24rem
 
 .title-text
   @apply text-black col-span-10 font-bold text-xl
@@ -137,12 +145,15 @@ export default {
   @apply text-black col-span-2 text-base
 
 .content
-  @apply transition-all duration-700 overflow-y-scroll flex bg-white filter drop-shadow-lg grid gap-4 grid-cols-12
+  @apply transition-all duration-700 overflow-y-scroll flex bg-white grid grid-cols-12
 
 .body
-  @apply w-full md:w-96 grid grid-cols-12 col-span-12 place-self-start
+  @apply w-full grid grid-cols-12 col-span-12 place-self-start
   max-width: 24rem
   height: 100vh
+@screen lg
+  .body
+    width: 24rem
 
 .icon
   @apply block font-bold m-auto
