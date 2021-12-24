@@ -1,5 +1,8 @@
 <template>
-  <div class="card">
+  <div
+    class="card"
+    :class="[flat ? 'shadow-lg' : '']"
+  >
     <div class="card-heading">
       <slot name="heading" />
     </div>
@@ -27,6 +30,11 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    flat: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   }
 }
@@ -35,7 +43,7 @@ export default {
 <style lang="sass" scoped>
 @import "@/assets/sass/_variables.sass"
 .card
-  @apply max-w-sm rounded bg-white overflow-hidden shadow-lg
+  @apply max-w-sm rounded bg-white overflow-hidden
 
 .card-heading
   @apply px-6 py-3 w-full font-bold text-xl

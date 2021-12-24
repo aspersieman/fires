@@ -21,7 +21,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '@/plugins/vuelayers.js', ssr: false },
+    // { src: '@/plugins/vuelayers.js', ssr: false },
+    { src: '@/plugins/leaflet.js', ssr: false },
     { src: '@/plugins/vue-tailwind-icons.js', ssr: true }
   ],
 
@@ -39,8 +40,7 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
-    '@/shared/vuelayers'
+    '@nuxtjs/pwa'
   ],
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -67,6 +67,6 @@ export default {
   build: { },
 
   transpile: [
-    'vuelayers'
+    // 'vuelayers'
   ]
 }

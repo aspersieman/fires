@@ -13,6 +13,7 @@
         class="toggle-button"
         :class="[right ? 'rounded-l' : 'rounded-r', open ? 'hidden md:block' : '']"
         @click.prevent="toggle()"
+        @toggle-sidebar="toggle()"
       >
         <span
           class="block font-bold m-auto"
@@ -72,6 +73,11 @@ export default {
       required: false,
       default: 'Drawer'
     },
+    state: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     right: {
       type: Boolean,
       required: false,
@@ -86,9 +92,15 @@ export default {
     }
   },
 
+  watch: {
+    state () {
+      this.toggle()
+    }
+  },
+
   methods: {
     toggle () {
-      console.log('toggle')
+      console.log('toggle()')
       this.open = !this.open
     }
   }
@@ -101,8 +113,9 @@ export default {
 .toggle-button
   @apply w-10 h-10 p-1 my-auto text-white bg-gray-600 text-center focus:outline-none hover:bg-gray-500 duration-300
   background-color: $accent_2_300
+  z-index: 1
 .toggle-button > svg
-  @apply z-40
+  z-index: 1
   margin-bottom: -40px
   margin-right: 40px
 
@@ -124,10 +137,12 @@ export default {
   @apply text-black col-span-2 text-base
 
 .content
-  @apply transition-all duration-700 overflow-y-scroll flex justify-center bg-white filter drop-shadow-lg grid gap-4 grid-cols-12 place-content-start
+  @apply transition-all duration-700 overflow-y-scroll flex bg-white filter drop-shadow-lg grid gap-4 grid-cols-12
 
 .body
-  @apply w-full md:w-96 grid grid-cols-12 col-span-12
+  @apply w-full md:w-96 grid grid-cols-12 col-span-12 place-self-start
+  max-width: 24rem
+  height: 100vh
 
 .icon
   @apply block font-bold m-auto

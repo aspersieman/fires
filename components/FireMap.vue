@@ -7,8 +7,9 @@
       <slot>
         <div class="side-block-container-right">
           <button
+            v-if="!gettingUserPosition"
             class="action-button action-button-icon"
-            @click="goToPosition(geolocPosition)"
+            @click="goToPosition(userPosition)"
           >
             <img
               src="@/assets/img/pin.png"
@@ -40,7 +41,7 @@
                 :key="wildfire.id"
                 class="side-block-list-item"
                 :title="wildfire.title.trim()"
-                @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
+                @click="goToPosition(wildfire.geometries[0].coordinates, wildfire)"
               >
                 <img
                   class="side-block-list-icon"
@@ -73,11 +74,11 @@
       <vl-view
         ref="view"
         :zoom.sync="zoom"
-        :center="geolocPosition"
+        :center.sync="center"
         :rotation.sync="rotation"
       />
 
-      <vl-geoloc @update:position="geolocPosition = $event">
+      <vl-geoloc>
         <template slot-scope="geoloc">
           <vl-feature v-if="geoloc.position" id="position-feature">
             <vl-geom-point :coordinates="geoloc.position" />
@@ -92,22 +93,6 @@
         </template>
       </vl-geoloc>
 
-      <vl-layer-vector
-        v-if="showCircle"
-      >
-        <vl-feature>
-          <vl-geom-point
-            :coordinates="circleCoordinates"
-            :offset="[0, -10]"
-          />
-          <vl-style-box>
-            <vl-style-circle :radius="20">
-              <vl-style-stroke color="red" />
-            </vl-style-circle>
-          </vl-style-box>
-        </vl-feature>
-      </vl-layer-vector>
-
       <vl-geoloc
         v-for="wildfire in wildfires"
         :id="wildfire.id"
@@ -121,7 +106,7 @@
                 :src="require('@/assets/img/fire.png')"
                 :scale="iconScale"
                 :anchor="[0.5, 1]"
-                @click="goToPosition(wildfire.geometries[0].coordinates, true, wildfire)"
+                @click="goToPosition(wildfire.geometries[0].coordinates, wildfire)"
               />
             </vl-style-box>
           </vl-feature>
@@ -172,7 +157,7 @@
       </vl-interaction-select>
 
       <vl-overlay
-        v-if="showCircle && selectedEvent"
+        v-if="selectedEvent"
         class="feature-popup"
         :position="circleCoordinates"
         :auto-pan="true"
@@ -212,13 +197,13 @@
     </vl-map>
     <div
       v-if="mode !== 'production'
-        && geolocPosition !== undefined"
+        && center !== undefined"
       class="info-box hidden md:block"
     >
       Zoom: {{ zoom }}<br>
       Center: {{ center }}<br>
       Rotation: {{ rotation }}<br>
-      My geolocation: {{ getGeoLocPostion }}
+      My geolocation: {{ getGeoLocPosition }}
     </div>
   </div>
 </template>
@@ -237,7 +222,6 @@ export default {
       zoom: 5,
       center: [0, 0],
       rotation: 0,
-      geolocPosition: undefined,
       clickCoordinate: undefined,
       selectedFeatures: [],
 
@@ -245,20 +229,22 @@ export default {
       wildfires: [],
       iconScale: 0.04,
       wildfireFilter: '',
-      showCircle: false,
       circleCoordinates: [0, 0],
       loading: false,
       loadingText: 'Loading event data...',
       selectedEvent: null,
+      userPosition: null,
+      gettingUserPosition: true,
 
+      // Sidebar
       right: true
     }
   },
 
   computed: {
-    getGeoLocPostion () {
-      return this.geolocPosition
-        ? formatcoords(this.geolocPosition).format()
+    getGeoLocPosition () {
+      return this.center
+        ? formatcoords(this.center).format()
         : ['', '']
     },
 
@@ -271,6 +257,20 @@ export default {
 
   mounted () {
     this.fetchEvents()
+    if (!('geolocation' in navigator)) {
+      console.error('Geolocation is not available.')
+    }
+
+    // get position
+    navigator.geolocation.getCurrentPosition((pos) => {
+      this.gettingUserPosition = false
+      this.userPosition = [pos.coords.latitude, pos.coords.longitude]
+      this.center = this.userPosition
+      console.log(this.userPosition)
+    }, (err) => {
+      this.gettingUserPosition = false
+      console.error(err.message)
+    })
   },
 
   methods: {
@@ -297,8 +297,8 @@ export default {
         .then(() => { this.loading = false })
     },
 
-    goToPosition (position, showCircle = false, selectedEvent = null) {
-      this.showCircle = false
+    goToPosition (position, selectedEvent = null) {
+      console.log(position)
       this.loading = true
       this.loadingText = 'Finding position...'
       this.$refs.view.animate({
@@ -306,16 +306,12 @@ export default {
         zoom: 7
       })
         .then(() => {
-          if (showCircle) {
-            this.showCircle = true
-            this.circleCoordinates = position
-          }
           if (selectedEvent) {
             this.selectedEvent = selectedEvent
           }
           this.loading = false
+          // this.center = position
         })
-      this.center = position
     },
 
     goTo (url) {
@@ -346,7 +342,7 @@ export default {
   height: calc(100vh - 40px - 40px)
 
 .side-block-container-right
-  @apply grid col-span-12
+  @apply grid col-span-12 justify-self-start
   margin: 5px
 
 .side-block
@@ -384,21 +380,6 @@ export default {
   @apply fixed bottom-20 left-5 text-xs border border-solid border-gray-400 p-1 rounded
   background-color: rgb(255, 255, 255, 0.5)
 
-.action-button
-  @apply whitespace-nowrap text-white font-bold rounded m-1
-  background-color: $accent_0_200
-  max-height: 35px
-  margin: 5px
-  padding: 3px
-
-.action-button:hover
-  background-color: $accent_0_300
-
-.action-button-icon img
-  @apply inline-flex items-start
-  width: 20px
-  height: 20px
-
 .wildfire-filter
   @apply bg-white block px-3 py-1.5 text-base text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out focus:text-gray-700 focus:bg-white focus:outline-none
   height: 1.8rem
@@ -434,4 +415,19 @@ export default {
     margin-left: -11px
   .content
     word-break: break-all
+
+.action-button
+  @apply whitespace-nowrap text-white font-bold rounded m-1
+  background-color: $accent_0_200
+  max-height: 35px
+  margin: 5px
+  padding: 3px
+
+.action-button:hover
+  background-color: $accent_0_300
+
+.action-button-icon img
+  @apply inline-flex items-start
+  width: 20px
+  height: 20px
 </style>

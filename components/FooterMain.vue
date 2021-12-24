@@ -1,11 +1,11 @@
 <template>
   <footer class="text-center lg:text-left bg-gray-100 text-gray-600 fixed w-full z-10 bottom-0">
     <div class="flex justify-center items-center lg:justify-between p-2 border-b border-gray-300 mr-1">
-      <span class="text-xs md:text-md">
-        <span>© {{ year }} Copyright:</span>
+      <span class="text-xs md:text-md hidden md:flex">
+        <span>© {{ year }}&nbsp;</span>
         <a class="text-gray-600 font-semibold" href="https://nicolvandermerwe.com/">Nicol van der Merwe</a>
       </span>
-      <div class="flex justify-center mx-1">
+      <div class="justify-center mx-1 hidden md:flex">
         <a href="https://www.linkedin.com/in/nicolaasjvandermerwe/" class="mr-1 md:mr-6 text-gray-600">
           <svg
             aria-hidden="true"
@@ -42,7 +42,7 @@
         </a>
       </div>
       <span class="text-xs ml-1">
-        <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+        <div>Icons: <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
       </span>
     </div>
   </footer>
@@ -59,3 +59,9 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+footer
+  @media (min-width: 768px)
+    height: 30px
+</style>

@@ -1,5 +1,8 @@
 <template>
-  <nav class="background-colour-primary flex items-center justify-between flex-wrap p-3 fixed w-full z-10 top-0">
+  <nav
+    class="background-colour-primary flex items-center justify-between
+      flex-wrap p-3 fixed w-full z-10 top-0 drop-shadow-lg"
+  >
     <div class="flex items-center flex-shrink-0 mr-6 font-colour-light">
       <a class="font-colour-light no-underline hover:text-white hover:no-underline" href="/">
         <span class="text-2xl pl-2">
@@ -17,29 +20,26 @@
     </div>
 
     <div class="block lg:hidden">
-      <button
-        class="flex items-center px-3 py-2 border rounded font-colour-light
-        border-gray-600 hover:text-white hover:border-white"
-        @click="toggle()"
-      >
-        <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <title>Menu</title>
-          <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-        </svg>
-      </button>
+      <navigation-menu
+        :items="navigationItems"
+      />
     </div>
 
     <div
       class="w-full flex-grow lg:flex lg:items-center lg:w-auto lg:block pt-6
       lg:pt-0 z-2"
-      :class="{ 'hidden' : showNavContent === false }"
+      :class="[showNavContent === false ? 'hidden' : 'transition ease-in duration-700']"
     >
       <ul class="list-reset lg:flex justify-end flex-1 items-center">
-        <li class="mr-3">
-          <a class="inline-block py-2 px-4 font-colour-light no-underline" href="https://nicolvandermerwe.com">About me</a>
-        </li>
-        <li class="mr-3">
-          <a class="inline-block font-colour-light no-underline hover:text-gray-200 hover:text-underline py-2 px-4" href="https://github.com/aspersieman/fires">Code</a>
+        <li
+          v-for="navigationItem in navigationItems"
+          :key="navigationItem.name"
+          class="mr-3"
+        >
+          <a
+            class="inline-block py-2 px-4 font-colour-light no-underline"
+            :href="navigationItem.href"
+          >{{ navigationItem.title }}</a>
         </li>
       </ul>
     </div>
@@ -52,7 +52,19 @@ export default {
 
   data () {
     return {
-      showNavContent: false
+      showNavContent: false,
+      navigationItems: [
+        {
+          name: 'aboutme',
+          href: 'https://nicolvandermerwe.com',
+          title: 'About me'
+        },
+        {
+          name: 'code',
+          href: 'https://github.com/aspersieman/fires',
+          title: 'Code'
+        }
+      ]
     }
   },
 
