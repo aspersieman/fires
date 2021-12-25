@@ -38,7 +38,10 @@
           <a
             class="inline-block py-2 px-4 font-colour-light no-underline"
             :href="navigationItem.href"
-          >{{ navigationItem.title }}</a>
+            @click="clickEvent(navigationItem.click || null)"
+          >
+            {{ navigationItem.title }}
+          </a>
         </li>
       </ul>
     </div>
@@ -56,17 +59,20 @@ export default {
         {
           name: 'aboutme',
           href: 'https://nicolvandermerwe.com',
-          title: 'About me'
+          title: 'About me',
+          click: ''
         },
         {
           name: 'code',
           href: 'https://github.com/aspersieman/fires',
-          title: 'Code'
+          title: 'Code',
+          click: ''
         },
         {
           name: 'about',
-          href: null,
-          title: 'About'
+          href: '#',
+          title: 'About',
+          click: 'about'
         }
       ]
     }
@@ -75,6 +81,17 @@ export default {
   methods: {
     toggle () {
       this.showNavContent = !this.showNavContent
+    },
+
+    clickEvent (action) {
+      switch (action) {
+        case 'about':
+          console.log('clickEvent: ', action)
+          this.$nuxt.$emit('toggle-about')
+          break
+        default:
+          break
+      }
     }
   }
 }

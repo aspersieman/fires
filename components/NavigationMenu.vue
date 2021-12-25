@@ -61,6 +61,7 @@
               :key="item.name"
               class="p-4 flex items-center space-x-2"
               :href="item.href"
+              @click="clickEvent(item.click || null)"
             >
               {{ item.title }}
             </a>
@@ -99,6 +100,19 @@ export default {
     return {
       isMenuOpen: false,
       year: (new Date()).getFullYear()
+    }
+  },
+
+  methods: {
+    clickEvent (action) {
+      switch (action) {
+        case 'about':
+          console.log('clickEvent: ', action)
+          this.$nuxt.$emit('toggle-about')
+          break
+        default:
+          break
+      }
     }
   }
 }
