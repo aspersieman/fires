@@ -4,10 +4,12 @@
     <client-only>
       <fire-map />
     </client-only>
+    <footer-main />
     <vue-tailwind-modal
       :showing="aboutModalState"
       :show-close="true"
       :background-close="true"
+      :css="modalOptions"
       @close="aboutModalState = false"
     >
       <h1 class="text-xl font-bold m-2">About</h1>
@@ -20,7 +22,6 @@
         Select the relevant event from the drawer on the right.
       </p>
     </vue-tailwind-modal>
-    <footer-main />
   </span>
 </template>
 
@@ -41,7 +42,12 @@ export default {
 
   data () {
     return {
-      aboutModalState: false
+      aboutModalState: false,
+      modalOptions: {
+        background: '',
+        modal: 'max-h-90',
+        close: ''
+      }
     }
   },
 
@@ -53,3 +59,7 @@ export default {
   }
 }
 </script>
+
+<style lang="sass" scoped>
+@import 'vue-tailwind-modal/src/css/modal'
+</style>

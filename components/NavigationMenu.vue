@@ -113,6 +113,7 @@ export default {
         default:
           break
       }
+      this.isMenuOpen = false
     }
   }
 }

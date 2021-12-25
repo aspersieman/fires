@@ -287,6 +287,8 @@ export default {
   overflow: hidden
   margin-top: 58px
   height: calc(100vh - 55px)
+  position: fixed
+  width: 100%
 
 .side-block-container-right
   @apply grid col-span-12 place-self-start
