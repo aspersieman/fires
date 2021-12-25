@@ -89,7 +89,7 @@ export default {
     return {
       open: false,
       dimmer: true,
-      fade: true
+      fade: false
     }
   },
 

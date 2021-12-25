@@ -46,7 +46,7 @@
             <div class="background-colour-primary p-4 flex items-center">
               <div class="w-full">
                 <p
-                  class="copyright font-semibold text-base text-xs"
+                  class="copyright font-semibold text-xs"
                 >
                   <span>© {{ year }}</span>
                   <a class="text-white font-semibold" href="https://nicolvandermerwe.com/">Nicol van der Merwe</a>
@@ -64,6 +64,18 @@
             >
               {{ item.title }}
             </a>
+          </div>
+          <div class="border-t border-dark" />
+          <div>
+            <div class="background-colour-primary p-1 flex items-center">
+              <div class="w-full">
+                <p
+                  class="copyright font-semibold text-xs"
+                >
+                  Icons <a href="https://www.freepik.com" title="Freepik">Freepik</a>,<a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
