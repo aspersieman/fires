@@ -1,4 +1,5 @@
 export default {
+  ssr: true,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Fires - Wildfires accross the globe',
@@ -20,8 +21,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    // { src: '@/plugins/vuelayers.js', ssr: false },
-    { src: '@/plugins/leaflet.js', ssr: false },
+    { src: '@/plugins/leaflet.client.js', ssr: false },
     { src: '@/plugins/vue-tailwind-icons.js', ssr: true }
   ],
 

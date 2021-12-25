@@ -6,7 +6,7 @@
     <!-- Sidebar -->
     <div
       class="container-main"
-      :class="[right ? 'right-0 flex-row' : 'left-0 flex-row-reverse', open ? '!z-40' : '']"
+      :class="[right ? 'right-0 flex-row' : 'left-0 flex-row-reverse', fade ? 'z-40' : 'z-9']"
     >
       <!--Drawer -->
       <button
@@ -29,7 +29,7 @@
       <div
         ref="content"
         class="content filter drop-shadow-lg"
-        :class="[open ? 'max-w-lg' : 'max-w-0']"
+        :class="[open ? 'max-w-lg z-40' : 'max-w-0']"
       >
         <div
           class="header"
@@ -88,7 +88,8 @@ export default {
   data () {
     return {
       open: false,
-      dimmer: true
+      dimmer: true,
+      fade: true
     }
   },
 
@@ -102,6 +103,13 @@ export default {
     toggle () {
       console.log('toggle()')
       this.open = !this.open
+      if (this.open) {
+        this.fade = this.open
+      } else {
+        setTimeout(() => {
+          this.fade = this.open
+        }, 700)
+      }
     }
   }
 }
@@ -109,6 +117,15 @@ export default {
 
 <style lang="sass" scoped>
 @import "@/assets/sass/_variables.sass"
+
+.max-w-0
+  max-width: 0rem
+.max-w-lg
+  max-width: 32rem
+.z-9
+  z-index: 9
+.z-40
+  z-index: 40
 
 .toggle-button
   @apply w-10 h-10 p-1 my-auto text-white bg-gray-600 text-center duration-300
@@ -126,7 +143,6 @@ export default {
 
 .container-main
   @apply absolute flex top-0 h-screen
-  z-index: 1
 
 .header
   @apply border-b border-solid border-gray-300 font-bold w-full grid grid-cols-12 col-span-12

@@ -59,80 +59,78 @@
       v-if="loading"
       :text="loadingText"
     />
-    <client-only>
-      <l-map
-        ref="wildfireMap"
-        :zoom="zoom"
-        :center="center"
-        :options="mapOptions"
-        style="height: 100%; z-index: 0;"
-        @update:center="centerUpdate"
-        @update:zoom="zoomUpdate"
+    <l-map
+      ref="wildfireMap"
+      :zoom="zoom"
+      :center="center"
+      :options="mapOptions"
+      style="height: 100%; z-index: 0;"
+      @update:center="centerUpdate"
+      @update:zoom="zoomUpdate"
+    >
+      <l-tile-layer
+        :url="url"
+        :attribution="attribution"
+      />
+      <l-marker
+        v-if="userPosition"
+        :lat-lng="userPosition"
       >
-        <l-tile-layer
-          :url="url"
-          :attribution="attribution"
+        <l-tooltip :options="{ permanent: true, interactive: true }">
+          <div>
+            You are here
+          </div>
+        </l-tooltip>
+      </l-marker>
+      <l-marker
+        v-for="wildfire in wildfires"
+        :id="wildfire.id"
+        :ref="`marker-`+wildfire.id"
+        :key="wildfire.id"
+        :lat-lng="wildfire.geometries[0].coordinates"
+      >
+        <l-icon
+          :icon-size="dynamicSize"
+          :icon-anchor="dynamicAnchor"
+          :icon-url="require('@/assets/img/fire.png')"
         />
-        <l-marker
-          v-if="userPosition"
-          :lat-lng="userPosition"
-        >
-          <l-tooltip :options="{ permanent: true, interactive: true }">
-            <div>
-              You are here
-            </div>
-          </l-tooltip>
-        </l-marker>
-        <l-marker
-          v-for="wildfire in wildfires"
-          :id="wildfire.id"
-          :ref="`marker-`+wildfire.id"
-          :key="wildfire.id"
-          :lat-lng="wildfire.geometries[0].coordinates"
-        >
-          <l-icon
-            :icon-size="dynamicSize"
-            :icon-anchor="dynamicAnchor"
-            :icon-url="require('@/assets/img/fire.png')"
-          />
-          <l-popup>
-            <card-feature
-              footer-title="Sources"
-            >
-              <template slot="heading">
-                Wildfire: {{ wildfire.title.trim() }}
-              </template>
-              <template slot="body">
-                {{ wildfire.description }}
-                <div class="text-xs">
-                  <p class="font-bold">
-                    Coordinates:
-                  </p>
-                  <ul>
-                    <li>
-                      Latitude: {{ wildfire.geometries[0].coordinates[0] }}
-                    </li>
-                    <li>
-                      Longitude: {{ wildfire.geometries[0].coordinates[1] }}
-                    </li>
-                  </ul>
-                </div>
-              </template>
-              <template slot="footer">
-                <button
-                  v-for="source in wildfire.sources"
-                  :key="source.id"
-                  class="card-button"
-                  @click="goTo(source.url)"
-                >
-                  {{ source.id }}
-                </button>
-              </template>
-            </card-feature>
-          </l-popup>
-        </l-marker>
-      </l-map>
-    </client-only>
+        <l-popup>
+          <card-feature
+            footer-title="Sources"
+          >
+            <template slot="heading">
+              Wildfire: {{ wildfire.title.trim() }}
+            </template>
+            <template slot="body">
+              {{ wildfire.description }}
+              <div class="text-xs">
+                <p class="font-bold">
+                  Coordinates:
+                </p>
+                <ul>
+                  <li>
+                    Latitude: {{ wildfire.geometries[0].coordinates[0] }}
+                  </li>
+                  <li>
+                    Longitude: {{ wildfire.geometries[0].coordinates[1] }}
+                  </li>
+                </ul>
+              </div>
+            </template>
+            <template slot="footer">
+              <button
+                v-for="source in wildfire.sources"
+                :key="source.id"
+                class="card-button"
+                @click="goTo(source.url)"
+              >
+                {{ source.id }}
+              </button>
+            </template>
+          </card-feature>
+        </l-popup>
+      </l-marker>
+    </l-map>
   </div>
 </template>
 
@@ -187,7 +185,7 @@ export default {
       right: true,
       wildfireFilter: '',
       gettingUserPosition: true,
-      sideBarState: false
+      sideBarState: true
     }
   },
 
@@ -288,7 +286,7 @@ export default {
   margin: 0
   overflow: hidden
   margin-top: 58px
-  height: calc(100vh - 40px - 48px)
+  height: calc(100vh - 55px)
 
 .side-block-container-right
   @apply grid col-span-12 place-self-start
@@ -314,7 +312,7 @@ export default {
   margin: 0
   width: 100%
 .side-block-list-item:hover
-  @apply bg-gray-700
+  @apply bg-gray-100
 
 .side-block-list-icon
   @apply float-left mr-1

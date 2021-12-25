@@ -1,18 +1,18 @@
 <template>
-  <footer class="text-center lg:text-left bg-gray-100 text-gray-600 fixed w-full z-10 bottom-0">
-    <div class="flex justify-center items-center lg:justify-between p-2 border-b border-gray-300 mr-1">
-      <span class="text-xs md:text-md hidden md:flex">
+  <footer class="text-center lg:text-left bg-gray-100 text-gray-600 fixed w-full z-10 bottom-0 hidden md:block">
+    <div class="flex justify-center items-center lg:justify-between border-b border-gray-300 mr-1">
+      <span class="text-xs md:text-md p-1">
         <span>© {{ year }}&nbsp;</span>
         <a class="text-gray-600 font-semibold" href="https://nicolvandermerwe.com/">Nicol van der Merwe</a>
       </span>
-      <div class="justify-center mx-1 hidden md:flex">
-        <a href="https://www.linkedin.com/in/nicolaasjvandermerwe/" class="mr-1 md:mr-6 text-gray-600">
+      <div class="justify-center hidden md:flex p-1">
+        <a href="https://www.linkedin.com/in/nicolaasjvandermerwe/" class="text-gray-600 m-1">
           <svg
             aria-hidden="true"
             focusable="false"
             data-prefix="fab"
             data-icon="linkedin-in"
-            class="svg-inline--fa fa-linkedin-in w-3.5"
+            class="svg-inline--fa fa-linkedin-in w-4"
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
@@ -23,7 +23,7 @@
             />
           </svg>
         </a>
-        <a href="https://github.com/aspersieman" class="text-gray-600">
+        <a href="https://github.com/aspersieman" class="text-gray-600 m-1">
           <svg
             aria-hidden="true"
             focusable="false"
@@ -41,7 +41,7 @@
           </svg>
         </a>
       </div>
-      <span class="text-xs ml-1">
+      <span class="text-xs ml-1 hidden md:flex">
         <div>Icons: <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
       </span>
     </div>
@@ -62,6 +62,5 @@ export default {
 
 <style lang="sass" scoped>
 footer
-  @media (min-width: 768px)
-    height: 30px
+  height: 30px
 </style>
